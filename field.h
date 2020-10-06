@@ -11,6 +11,7 @@ struct Field {
     Field(Field*);
     QVector<Field> possibleFields();
     Field switchCells(int, int, int, int);
+    int toInt();
 };
 
 #endif // FIELD_H

@@ -1,28 +1,45 @@
 #include "data.h"
 
-Data::Data() {
-    numOfNodes = 0;
+Data::Data() {}
+
+void Data::refresh(Node* nd) {
+    childrenForExpansion.clear();
+    newChildren.clear();
+    repeatingChildren.clear();
+    addedChildren.clear();
     numOfSteps = 0;
+
+    Tree tr(nd);
+    tree = tr;
+    childrenForExpansion.push_back(tree.getRoot());
+    addedChildren.insert(getKey(tree.getRoot()), tree.getRoot());
 }
 
-void Data::setTree(Field f) {
-    Tree tr(f);
-    tree = tr;
+QVector<Node*> Data::getChildrenForExpansion() {
+    return childrenForExpansion;
+}
+
+QVector<Node*> Data::getNewChildren() {
+    return newChildren;
+}
+
+QVector<Node*> Data::getRepeatingChildren() {
+    return repeatingChildren;
+}
+
+QString Data::getInfoStr() {
+   return infoStr;
 }
 
 void Data::setFS(Field f) {
     finalState = f;
 }
 
-Field Data::getContent(int num) {
-    return content[num];
+int Data::getKey(Node* nd) {
+    return nd->content.toInt();
 }
 
-int Data::getContentSize() {
-    return contentSize;
-}
-
-bool Data::isComplete(Node* nd) {
+bool Data::goalTest(Node* nd) {
 
     bool res = true;
 
@@ -35,64 +52,67 @@ bool Data::isComplete(Node* nd) {
 
 }
 
-void Data::setResultToContent() {
+QVector<Node*> Data::getFinalResult() {
 
-    QVector<Field> res;
+    QVector<Node*> res;
+    Node* curNode;
 
-    bool isFinded = false;
-    for (int i = 0; !isFinded; ++i)
-        if (isComplete(theOldestChildren[i])) {
-            isFinded = true;
-            Node* curNode = theOldestChildren[i];
-            while (curNode != nullptr) {
-                res.push_front(curNode->content);
-                curNode = curNode->parent;
-            }
+    bool isFinished = false;
+    for (int i = 0; i < newChildren.size()  && !isFinished; ++i)
+        if (goalTest(newChildren[i])) {
+            isFinished = true;
+            curNode = newChildren[i];
         }
 
-    content = res;
-
-}
-
-bool Data::stepBS() {
-
-    QVector<Node*> temp;
-    bool res = false;
-
-    if (theOldestChildren.size() == 0) {
-        temp = tree.addChildren(tree.getRoot());
-        theOldestChildren.append(temp);
-        for (int i = 0; i < theOldestChildren.size(); ++i)
-            if (isComplete(theOldestChildren[i]))
-                res = true;
-
+    while (curNode != nullptr) {
+        res.push_front(curNode);
+        curNode = curNode->parent;
     }
-    else
-        for (int i = 0; i < theOldestChildren.size(); ++i)
-            temp = tree.addChildren(theOldestChildren[i]);
-
-    theOldestChildren.clear();
-    theOldestChildren.append(temp);
-
-    for (int i = 0; i < theOldestChildren.size(); ++i) {
-        content.push_back(theOldestChildren[i]->content);
-        if (isComplete(theOldestChildren[i]))
-            res = true;
-    }
-
-    contentSize = theOldestChildren.size();
-    numOfSteps++;
 
     return res;
 
 }
 
-void Data::blindSearch() {
+bool Data::stepBlindSearch(QString option) {
 
-    bool isFinished = false;
+    bool res = false;
+    QVector<Node*> temp;
+    repeatingChildren.clear();
 
-    while (!isFinished) {
-        isFinished = stepBS();
+    newChildren = tree.expansion(childrenForExpansion[0]);
+    for (int i = 0; i < newChildren.size(); ++i) {
+        if (addedChildren.find(getKey(newChildren[i])) == addedChildren.end()) {
+            if (goalTest(newChildren[i]))
+                res = true;
+            temp.push_back(newChildren[i]);
+        }
+        else
+            repeatingChildren.push_back(newChildren[i]);
     }
+
+    childrenForExpansion.removeFirst();
+
+    if (option == "BFS") {
+        childrenForExpansion.append(temp);
+        for (int i = 0; i < temp.size(); ++i)
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+    }
+    else if (option == "DFS") {
+        for (int i = 0; i < temp.size(); ++i) {
+            childrenForExpansion.push_front(temp[temp.size()-1-i]); // добавление в начало вектора
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+        }
+    }
+
+    numOfSteps++;
+
+    if (!res)
+        infoStr = "Решение не найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
+                ". Выполнено шагов: " + QString::number(numOfSteps) + "\n";
+    else
+        infoStr = "Решение найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
+                ". Выполнено шагов: " + QString::number(numOfSteps) + "\n";
+
+    return res;
 
 }

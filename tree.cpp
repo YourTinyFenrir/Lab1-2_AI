@@ -2,14 +2,20 @@
 
 Node::Node() { }
 
+Node::Node(QVector<int> num) {
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            content.cell[i][j] = num[3*i + j];
+
+    parent = nullptr;
+
+}
+
 Tree::Tree() { }
 
-Tree::Tree(Field f) {
-
-    root = new Node;
-    root->content = f;
-    root->parent = nullptr;
-
+Tree::Tree(Node* nd) {
+    root = nd;
 }
 
 void deleteNode(Node* nd) {
@@ -40,7 +46,7 @@ Tree& Tree::operator=(const Tree & tr) {
 
 }
 
-QVector<Node*> Tree::addChildren(Node* p) {
+QVector<Node*> Tree::expansion(Node* p) {
 
     QVector<Field> ch = p->content.possibleFields();
 

@@ -1,4 +1,5 @@
 #include "field.h"
+#include "qmath.h"
 
 Field::Field() { }
 
@@ -27,6 +28,18 @@ Field Field::switchCells(int n11, int n12, int n21, int n22) {
     f.cell[n21][n22] = num;
 
     return f;
+
+}
+
+int Field::toInt() {
+
+    int res = 0;
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            res += cell[i][j] * qPow(10, 3*i + j);
+
+    return res;
 
 }
 

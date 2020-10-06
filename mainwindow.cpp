@@ -9,11 +9,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     setDefaultData();
+    ui->textEdit->setReadOnly(true);
 
-    ui->comboBox->addItem("Слепой поиск");
-    ui->comboBox->addItem("2 вариант");
-    ui->comboBox->addItem("3 вариант");
-    ui->comboBox->addItem("4 вариант");
+    ui->comboBox->addItem("Слепой поиск в ширину");
+    ui->comboBox->addItem("Слепой поиск в глубину");
+    ui->comboBox->addItem("Манхэттенское расстояние");
+    ui->comboBox->addItem("Кол-во фишек не на своих местах");
 
 }
 
@@ -22,50 +23,101 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::fieldToScreen(Field f) {
+void MainWindow::showOnScreen(Node* nd, int num) {
 
-    ui->label_0->setNum(f.cell[0][0]);
-    ui->label_1->setNum(f.cell[0][1]);
-    ui->label_2->setNum(f.cell[0][2]);
-    ui->label_3->setNum(f.cell[1][0]);
-    ui->label_4->setNum(f.cell[1][1]);
-    ui->label_5->setNum(f.cell[1][2]);
-    ui->label_6->setNum(f.cell[2][0]);
-    ui->label_7->setNum(f.cell[2][1]);
-    ui->label_8->setNum(f.cell[2][2]);
+    switch(num) {
+    case 0:
+        ui->s10->setNum(nd->content.cell[0][0]);
+        ui->s11->setNum(nd->content.cell[0][1]);
+        ui->s12->setNum(nd->content.cell[0][2]);
+        ui->s13->setNum(nd->content.cell[1][0]);
+        ui->s14->setNum(nd->content.cell[1][1]);
+        ui->s15->setNum(nd->content.cell[1][2]);
+        ui->s16->setNum(nd->content.cell[2][0]);
+        ui->s17->setNum(nd->content.cell[2][1]);
+        ui->s18->setNum(nd->content.cell[2][2]);
+        break;
+    case 1:
+        ui->s20->setNum(nd->content.cell[0][0]);
+        ui->s21->setNum(nd->content.cell[0][1]);
+        ui->s22->setNum(nd->content.cell[0][2]);
+        ui->s23->setNum(nd->content.cell[1][0]);
+        ui->s24->setNum(nd->content.cell[1][1]);
+        ui->s25->setNum(nd->content.cell[1][2]);
+        ui->s26->setNum(nd->content.cell[2][0]);
+        ui->s27->setNum(nd->content.cell[2][1]);
+        ui->s28->setNum(nd->content.cell[2][2]);
+        break;
+    case 2:
+        ui->s30->setNum(nd->content.cell[0][0]);
+        ui->s31->setNum(nd->content.cell[0][1]);
+        ui->s32->setNum(nd->content.cell[0][2]);
+        ui->s33->setNum(nd->content.cell[1][0]);
+        ui->s34->setNum(nd->content.cell[1][1]);
+        ui->s35->setNum(nd->content.cell[1][2]);
+        ui->s36->setNum(nd->content.cell[2][0]);
+        ui->s37->setNum(nd->content.cell[2][1]);
+        ui->s38->setNum(nd->content.cell[2][2]);
+        break;
+    }
+
 
 }
 
 void MainWindow::showResults() {
 
-    ui->pushButton->hide();
-    ui->pushButton_2->hide();
-    ui->pushButton_5->show();
+    num1 = 0; num2 = 0; num3 = 0;
+
+    ui->bStep->hide();
+    ui->bCycle->hide();
+    ui->b1up->show();
+    ui->b1down->show();
+    ui->b2up->hide();
+    ui->b2down->hide();
+    ui->b3up->hide();
+    ui->b3down->hide();
+    ui->bDrop->show();
     ui->comboBox->setVisible(true);
 
-    data.setResultToContent();
-    contentNum = 0;
-    fieldToScreen(data.getContent(contentNum));
-    // Вывод доп данных сбоку
+    outputList1 = data.getFinalResult();
+    showOnScreen(outputList1[0], 0);
+    outputInfo += data.getInfoStr();
+    ui->textEdit->setText(outputInfo);
 
 }
 
 void MainWindow::setDefaultData() {
 
-    contentNum = 0;
-    ui->pushButton->show();
-    ui->pushButton_2->show();
-    ui->pushButton_3->hide();
-    ui->pushButton_4->hide();
-    ui->pushButton_5->hide();
+    num1 = 0; num2 = 0; num3 = 0;
+    outputList1.clear();
+    outputList2.clear();
+    outputList3.clear();
+    outputInfo.clear();
+    ui->textEdit->clear();
+    ui->bStep->show();
+    ui->bCycle->show();
+    ui->bDrop->hide();
+    ui->b1up->hide();
+    ui->b1down->hide();
+    ui->b2up->hide();
+    ui->b2down->hide();
+    ui->b3up->hide();
+    ui->b3down->hide();
 
     QVector<int> vec;
-    vec.push_back(1); vec.push_back(2); vec.push_back(3); vec.push_back(4); vec.push_back(0);
-    vec.push_back(6); vec.push_back(7); vec.push_back(5); vec.push_back(8);
+    //vec.push_back(5); vec.push_back(8); vec.push_back(3); vec.push_back(4); vec.push_back(0);
+    //vec.push_back(2); vec.push_back(7); vec.push_back(6); vec.push_back(1);
+    vec.push_back(1); vec.push_back(2); vec.push_back(3); vec.push_back(4); vec.push_back(5);
+    vec.push_back(6); vec.push_back(0); vec.push_back(7); vec.push_back(8);
 
-    Field f(vec);
-    data.setTree(f);
-    fieldToScreen(f);
+    Node nd(vec);
+    data.refresh(&nd);
+    showOnScreen(&nd, 0);
+
+    QVector<int> vec1(9);
+    Node nd1(vec1);
+    showOnScreen(&nd1, 1);
+    showOnScreen(&nd1, 2);
 
     vec.clear();
     vec.push_back(1); vec.push_back(2); vec.push_back(3); vec.push_back(4); vec.push_back(5);
@@ -76,63 +128,158 @@ void MainWindow::setDefaultData() {
 
 }
 
-void MainWindow::on_pushButton_clicked() {
+void MainWindow::on_bStep_clicked() {
 
     ui->comboBox->setVisible(false);
-    ui->pushButton_3->show();
-    ui->pushButton_4->hide();
+    ui->bCycle->show();
+    ui->bDrop->hide();
+    ui->b1up->show();
+    ui->b2up->show();
+    ui->b3up->show();
 
-    bool isFinished = data.stepBS();
+    bool isFinished;
+    switch (ui->comboBox->currentIndex()) {
+    case 0:
+        isFinished = data.stepBlindSearch("BFS");
+        break;
+    case 1:
+        isFinished = data.stepBlindSearch("DFS");
+        break;
+    }
+
+    outputList1 = data.getChildrenForExpansion();
+    outputList2 = data.getNewChildren();
+    outputList3 = data.getRepeatingChildren();\
+
+    QVector<int> temp(9);
+    Node nd(temp);
+
     if (isFinished)
         showResults();
-    else {
-        contentNum = 0;
-        fieldToScreen(data.getContent(contentNum));
+    else  {
+        if (outputList1.size() > 0)
+            showOnScreen(outputList1[0], 0);
+        else
+            showOnScreen(&nd, 1);
+        if (outputList1.size() <= 1) {
+            ui->b1up->hide();
+            ui->b1down->hide();
+        }
+
+        if (outputList2.size() > 0)
+            showOnScreen(outputList2[0], 1);
+        else
+            showOnScreen(&nd, 2);
+        if (outputList2.size() <= 1) {
+            ui->b2up->hide();
+            ui->b2down->hide();
+        }
+
+        if (outputList3.size() > 0)
+            showOnScreen(outputList3[0], 2);
+        else
+            showOnScreen(&nd, 3);
+        if (outputList3.size() <= 1) {
+            ui->b3up->hide();
+            ui->b3down->hide();
+        }
+
+        num1 = 0; num2 = 0; num3 = 0;
+        outputInfo += data.getInfoStr();
+        ui->textEdit->setText(outputInfo);
     }
 
 }
 
-void MainWindow::on_pushButton_2_clicked() {
+void MainWindow::on_bCycle_clicked() {
 
     ui->comboBox->setVisible(false);
-    ui->pushButton_3->show();
-    ui->pushButton_4->hide();
+    ui->bStep->show();
+    ui->bDrop->hide();
+    bool isFinished;
 
     switch(ui->comboBox->currentIndex()) {
         case 0:
-        data.blindSearch();
-        showResults();
+            isFinished = false;
+            while (!isFinished) {
+                isFinished = data.stepBlindSearch("BFS");
+            }
             break;
         case 1:
+            isFinished = false;
+            while (!isFinished) {
+                isFinished = data.stepBlindSearch("DFS");
+            }
             break;
-        case 2:
+        /*case 2:
             break;
         case 3:
-            break;
+            break;*/
     }
+    showResults();
 
 }
 
-void MainWindow::on_pushButton_3_clicked() {
-
-    contentNum++;
-    ui->pushButton_4->show();
-    if (contentNum + 1 == data.getContentSize())
-        ui->pushButton_3->hide();
-    fieldToScreen(data.getContent(contentNum));
-
-}
-
-void MainWindow::on_pushButton_4_clicked() {
-
-    contentNum--;
-    ui->pushButton_3->show();
-    if (contentNum == 0)
-        ui->pushButton_4->hide();
-    fieldToScreen(data.getContent(contentNum));
-
-}
-
-void MainWindow::on_pushButton_5_clicked() {
+void MainWindow::on_bDrop_clicked() {
     setDefaultData();
+}
+
+void MainWindow::on_b1up_clicked() {
+
+    num1++;
+    ui->b1down->show();
+    if (num1 + 1 == outputList1.size())
+        ui->b1up->hide();
+    showOnScreen(outputList1[num1], 0);
+
+}
+
+void MainWindow::on_b1down_clicked() {
+
+    num1--;
+    ui->b1up->show();
+    if (num1 == 0)
+        ui->b1down->hide();
+    showOnScreen(outputList1[num1], 0);
+
+}
+
+void MainWindow::on_b2up_clicked() {
+
+    num2++;
+    ui->b2down->show();
+    if (num2 + 1 == outputList2.size())
+        ui->b2up->hide();
+    showOnScreen(outputList2[num2], 1);
+
+}
+
+void MainWindow::on_b2down_clicked() {
+
+    num2--;
+    ui->b2up->show();
+    if (num2 == 0)
+        ui->b2down->hide();
+    showOnScreen(outputList2[num2], 1);
+
+}
+
+void MainWindow::on_b3up_clicked() {
+
+    num3++;
+    ui->b3down->show();
+    if (num3 + 1 == outputList3.size())
+        ui->b3up->hide();
+    showOnScreen(outputList3[num3], 2);
+
+}
+
+void MainWindow::on_b3down_clicked() {
+
+    num3--;
+    ui->b3up->show();
+    if (num3 == 0)
+        ui->b3down->hide();
+    showOnScreen(outputList3[num3], 2);
+
 }

@@ -2,33 +2,39 @@
 #define DATA_H
 
 #include "QVector"
+#include "QHash"
 #include "tree.h"
 #include "field.h"
 
 class Data {
     Tree tree;
-    QVector<Node*> theOldestChildren;
+    QVector<Node*> childrenForExpansion;
+    QVector<Node*> newChildren;
+    QVector<Node*> repeatingChildren;
+
+    QHash<int, Node*> addedChildren;
+
     Field finalState;
 
-    QVector<Field> content;
-    int contentSize;
-
-    int numOfNodes;
+    QString infoStr;
     int numOfSteps;
 public:
     Data();
 
-    void setTree(Field);
+    void refresh(Node*);
     void setFS(Field);
 
-    Field getContent(int);
-    int getContentSize();
+    int getKey(Node*);
+    QVector<Node*> getChildrenForExpansion();
+    QVector<Node*> getNewChildren();
+    QVector<Node*> getRepeatingChildren();
+    QString getInfoStr();
 
-    bool isComplete(Node*);
-    void setResultToContent();
+    bool goalTest(Node*);
+    QVector<Node*> getFinalResult();
 
-    bool stepBS();
-    void blindSearch();
+    bool stepBlindSearch(QString);
+
 };
 
 #endif // DATA_H

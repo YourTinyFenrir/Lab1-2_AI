@@ -18,24 +18,35 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void fieldToScreen(Field);
+    void showOnScreen(Node*, int);
     void showResults();
     void setDefaultData();
 private slots:
-    void on_pushButton_clicked();
 
-    void on_pushButton_2_clicked();
 
-    void on_pushButton_3_clicked();
+    void on_b1up_clicked();
+    void on_b1down_clicked();
+    void on_b2up_clicked();
+    void on_b2down_clicked();
+    void on_b3up_clicked();
+    void on_b3down_clicked();
 
-    void on_pushButton_4_clicked();
+    void on_bStep_clicked();
 
-    void on_pushButton_5_clicked();
+    void on_bCycle_clicked();
+
+    void on_bDrop_clicked();
 
 private:
     Ui::MainWindow *ui;
 
     Data data;
-    int contentNum;
+    QVector<Node*> outputList1;
+    QVector<Node*> outputList2;
+    QVector<Node*> outputList3;
+    QString outputInfo;
+    int num1;
+    int num2;
+    int num3;
 };
 #endif // MAINWINDOW_H

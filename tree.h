@@ -9,17 +9,19 @@ struct Node {
     Node* parent;
 
     Node();
+    Node(QVector<int>);
 };
 
 class Tree {
     Node* root;
 public:
     Tree();
-    Tree(Field);
+    Tree(Node*);
     ~Tree();
     Node* getRoot();
     Tree& operator= (const Tree&);
-    QVector<Node*> addChildren(Node*);
+    QVector<Node*> expansion(Node*);
+
 };
 
 #endif // TREE_H
