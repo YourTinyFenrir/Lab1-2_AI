@@ -9,9 +9,11 @@ struct Field {
     Field();
     Field(QVector<int>);
     Field(Field*);
-    QVector<Field> possibleFields();
     Field switchCells(int, int, int, int);
     int toInt();
+    int cellsOnIncorrectPosition(Field);
+    int manhattanDistance(Field);
+    QVector<Field> possibleFields();
 };
 
 #endif // FIELD_H

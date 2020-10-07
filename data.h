@@ -33,7 +33,7 @@ public:
     bool goalTest(Node*);
     QVector<Node*> getFinalResult();
 
-    bool stepBlindSearch(QString);
+    bool stepSearch(QString);
 
 };
 

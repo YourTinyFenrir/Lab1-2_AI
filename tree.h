@@ -6,6 +6,7 @@
 struct Node {
     Field content;
     QVector<Node*> children;
+    int generation;
     Node* parent;
 
     Node();

@@ -43,6 +43,39 @@ int Field::toInt() {
 
 }
 
+int Field::cellsOnIncorrectPosition(Field f) {
+
+    int num = 0;
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            if (cell[i][j] != f.cell[i][j])
+                num++;
+
+    return num;
+
+}
+
+int Field::manhattanDistance(Field f) {
+
+    int dist = 0;
+
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            if (cell[i][j] != f.cell[i][j]) {
+                bool check = false;
+                for (int m = 0; m < 3 && !check; ++m)
+                    for (int n = 0; n < 3 && !check; ++n)
+                        if (cell[i][j] == f.cell[m][n]) {
+                            check = true;
+                            dist += abs(m-i) + abs(n-j);
+                        }
+            }
+
+    return dist;
+
+}
+
 QVector<Field> Field::possibleFields() {
 
     QVector<Field> res;
@@ -79,8 +112,8 @@ QVector<Field> Field::possibleFields() {
                         res.push_back(switchCells(1, 0, 2, 0));
                     }
                     else {
-                        res.push_back(switchCells(2, 1, 0, 2));
-                        res.push_back(switchCells(2, 1, 2, 2));
+                        res.push_back(switchCells(1, 2, 0, 2));
+                        res.push_back(switchCells(1, 2, 2, 2));
                     }
                 }
                 else {

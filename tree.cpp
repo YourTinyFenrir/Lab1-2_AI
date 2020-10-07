@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "QDebug"
 
 Node::Node() { }
 
@@ -8,11 +9,14 @@ Node::Node(QVector<int> num) {
         for (int j = 0; j < 3; ++j)
             content.cell[i][j] = num[3*i + j];
 
+    generation = 0;
     parent = nullptr;
 
 }
 
-Tree::Tree() { }
+Tree::Tree() {
+    root = nullptr;
+}
 
 Tree::Tree(Node* nd) {
     root = nd;
@@ -20,11 +24,13 @@ Tree::Tree(Node* nd) {
 
 void deleteNode(Node* nd) {
 
-    if (nd->children.size() > 0)
+    qDebug() << "Delete node. Level " + QString::number(nd->generation);
+    if (nd->children.size() > 0) {
         for (int i = 0; i < nd->children.size(); ++i)
             deleteNode(nd->children[i]);
-    else
-        delete nd;
+    }
+
+    delete nd; 
 }
 
 Tree::~Tree() {
@@ -41,6 +47,7 @@ Tree& Tree::operator=(const Tree & tr) {
     this->root->parent = tr.root->parent;
     this->root->content = tr.root->content;
     this->root->children = tr.root->children;
+    this->root->generation = tr.root->generation;
 
     return *this;
 
@@ -54,6 +61,7 @@ QVector<Node*> Tree::expansion(Node* p) {
         Node* nd = new Node;
         nd->content = ch[i];
         nd->parent = p;
+        nd->generation = p->generation + 1;
         p->children.push_back(nd);
     }
 

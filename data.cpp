@@ -9,6 +9,8 @@ void Data::refresh(Node* nd) {
     addedChildren.clear();
     numOfSteps = 0;
 
+    if (tree.getRoot() != nullptr)
+        tree.~Tree();
     Tree tr(nd);
     tree = tr;
     childrenForExpansion.push_back(tree.getRoot());
@@ -73,17 +75,20 @@ QVector<Node*> Data::getFinalResult() {
 
 }
 
-bool Data::stepBlindSearch(QString option) {
+bool Data::stepSearch(QString option) {
 
     bool res = false;
     QVector<Node*> temp;
+    QString depthResStr;
     repeatingChildren.clear();
 
     newChildren = tree.expansion(childrenForExpansion[0]);
     for (int i = 0; i < newChildren.size(); ++i) {
         if (addedChildren.find(getKey(newChildren[i])) == addedChildren.end()) {
-            if (goalTest(newChildren[i]))
+            if (goalTest(newChildren[i])) {
                 res = true;
+                depthResStr = QString::number(newChildren[i]->generation);
+            }
             temp.push_back(newChildren[i]);
         }
         else
@@ -97,11 +102,86 @@ bool Data::stepBlindSearch(QString option) {
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
     }
-    else if (option == "DFS") {
+
+    if (option == "DFS") {
         for (int i = 0; i < temp.size(); ++i) {
             childrenForExpansion.push_front(temp[temp.size()-1-i]); // добавление в начало вектора
             addedChildren.insert(getKey(temp[i]), temp[i]);
         }
+    }
+
+    if (option == "GS1") {
+        childrenForExpansion.append(temp);
+        for (int i = 0; i < temp.size(); ++i)
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+
+        int min = 100; int min_i = 0; // Поиск состояния с наибольшим числом значений не на "своих" местах
+        for (int i = 0; i < childrenForExpansion.size(); ++i) {
+            int numCells = childrenForExpansion[i]->content.cellsOnIncorrectPosition(finalState);
+            if (numCells < min) {
+                min = numCells;
+                min_i = i;
+            }
+        }
+        Node* temp = childrenForExpansion[min_i]; // Добавление узла, который будет раскрыт на следующем шаге, в начало вектора
+        childrenForExpansion.remove(min_i);
+        childrenForExpansion.push_front(temp);
+    }
+
+    if (option == "GS2") {
+        childrenForExpansion.append(temp);
+        for (int i = 0; i < temp.size(); ++i)
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+
+        int min = 100; int min_i = 0; // Поиск состояния с наименьшим Манхэттенским расстоянием
+        for (int i = 0; i < childrenForExpansion.size(); ++i) {
+            int dist = childrenForExpansion[i]->content.manhattanDistance(finalState);
+            if (dist < min) {
+                min = dist;
+                min_i = i;
+            }
+        }
+        Node* temp = childrenForExpansion[min_i]; // Добавление узла, который будет раскрыт на следующем шаге, в начало вектора
+        childrenForExpansion.remove(min_i);
+        childrenForExpansion.push_front(temp);
+    }
+
+    if (option == "A*1") {
+        childrenForExpansion.append(temp);
+        for (int i = 0; i < temp.size(); ++i)
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+
+        int min = 1000000000; int min_i = 0; // Поиск состояния с наибольшим числом значений не на "своих" местах (также учитываем глубину узла)
+        for (int i = 0; i < childrenForExpansion.size(); ++i) {
+            int numCells = childrenForExpansion[i]->content.cellsOnIncorrectPosition(finalState);
+            int depth = childrenForExpansion[i]->generation;
+            if (numCells + depth < min) {
+                min = numCells + depth;
+                min_i = i;
+            }
+        }
+        Node* temp = childrenForExpansion[min_i]; // Добавление узла, который будет раскрыт на следующем шаге, в начало вектора
+        childrenForExpansion.remove(min_i);
+        childrenForExpansion.push_front(temp);
+    }
+
+    if (option == "A*2") {
+        childrenForExpansion.append(temp);
+        for (int i = 0; i < temp.size(); ++i)
+            addedChildren.insert(getKey(temp[i]), temp[i]);
+
+        int min = 1000000000; int min_i = 0; // Поиск состояния с наименьшим Манхэттенским расстоянием (также учитываем глубину узла)
+        for (int i = 0; i < childrenForExpansion.size(); ++i) {
+            int numCells = childrenForExpansion[i]->content.manhattanDistance(finalState);
+            int depth = childrenForExpansion[i]->generation;
+            if (numCells + depth < min) {
+                min = numCells + depth;
+                min_i = i;
+            }
+        }
+        Node* temp = childrenForExpansion[min_i]; // Добавление узла, который будет раскрыт на следующем шаге, в начало вектора
+        childrenForExpansion.remove(min_i);
+        childrenForExpansion.push_front(temp);
     }
 
     numOfSteps++;
@@ -111,7 +191,7 @@ bool Data::stepBlindSearch(QString option) {
                 ". Выполнено шагов: " + QString::number(numOfSteps) + "\n";
     else
         infoStr = "Решение найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
-                ". Выполнено шагов: " + QString::number(numOfSteps) + "\n";
+                ". Выполнено шагов: " + QString::number(numOfSteps) + ". Количество шагов для решения: " + depthResStr + "\n";
 
     return res;
 

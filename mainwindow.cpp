@@ -13,8 +13,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->comboBox->addItem("Слепой поиск в ширину");
     ui->comboBox->addItem("Слепой поиск в глубину");
-    ui->comboBox->addItem("Манхэттенское расстояние");
-    ui->comboBox->addItem("Кол-во фишек не на своих местах");
+    ui->comboBox->addItem("Жадный поиск + Кол-во фишек не на своих местах");
+    ui->comboBox->addItem("Жадный поиск + Манхэттенское расстояние");
+    ui->comboBox->addItem("А* + Кол-во фишек не на своих местах");
+    ui->comboBox->addItem("А* + Манхэттенское расстояние");
 
 }
 
@@ -105,10 +107,8 @@ void MainWindow::setDefaultData() {
     ui->b3down->hide();
 
     QVector<int> vec;
-    //vec.push_back(5); vec.push_back(8); vec.push_back(3); vec.push_back(4); vec.push_back(0);
-    //vec.push_back(2); vec.push_back(7); vec.push_back(6); vec.push_back(1);
-    vec.push_back(1); vec.push_back(2); vec.push_back(3); vec.push_back(4); vec.push_back(5);
-    vec.push_back(6); vec.push_back(0); vec.push_back(7); vec.push_back(8);
+    vec.push_back(5); vec.push_back(8); vec.push_back(3); vec.push_back(4); vec.push_back(0);
+    vec.push_back(2); vec.push_back(7); vec.push_back(6); vec.push_back(1);
 
     Node nd(vec);
     data.refresh(&nd);
@@ -140,10 +140,22 @@ void MainWindow::on_bStep_clicked() {
     bool isFinished;
     switch (ui->comboBox->currentIndex()) {
     case 0:
-        isFinished = data.stepBlindSearch("BFS");
+        isFinished = data.stepSearch("BFS");
         break;
     case 1:
-        isFinished = data.stepBlindSearch("DFS");
+        isFinished = data.stepSearch("DFS");
+        break;
+    case 2:
+        isFinished = data.stepSearch("GS1");
+        break;
+    case 3:
+        isFinished = data.stepSearch("GS2");
+        break;
+    case 4:
+        isFinished = data.stepSearch("A*1");
+        break;
+    case 5:
+        isFinished = data.stepSearch("A*2");
         break;
     }
 
@@ -199,22 +211,36 @@ void MainWindow::on_bCycle_clicked() {
     bool isFinished;
 
     switch(ui->comboBox->currentIndex()) {
-        case 0:
-            isFinished = false;
-            while (!isFinished) {
-                isFinished = data.stepBlindSearch("BFS");
-            }
-            break;
-        case 1:
-            isFinished = false;
-            while (!isFinished) {
-                isFinished = data.stepBlindSearch("DFS");
-            }
-            break;
-        /*case 2:
-            break;
-        case 3:
-            break;*/
+    case 0:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("BFS");
+        break;
+    case 1:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("DFS");
+        break;
+    case 2:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("GS1");
+        break;
+    case 3:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("GS2");
+        break;
+    case 4:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("A*1");
+        break;
+    case 5:
+        isFinished = false;
+        while (!isFinished)
+            isFinished = data.stepSearch("A*2");
+        break;
     }
     showResults();
 

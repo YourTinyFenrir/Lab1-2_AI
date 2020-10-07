@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "field.h"
 
 #include <QApplication>
 
