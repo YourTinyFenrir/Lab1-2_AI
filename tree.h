@@ -11,6 +11,7 @@ struct Node {
 
     Node();
     Node(QVector<int>);
+    ~Node();
 };
 
 class Tree {
@@ -18,7 +19,6 @@ class Tree {
 public:
     Tree();
     Tree(Node*);
-    ~Tree();
     Node* getRoot();
     Tree& operator= (const Tree&);
     QVector<Node*> expansion(Node*);

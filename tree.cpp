@@ -3,6 +3,8 @@
 
 Node::Node() { }
 
+Node::~Node() { }
+
 Node::Node(QVector<int> num) {
 
     for (int i = 0; i < 3; ++i)
@@ -20,21 +22,6 @@ Tree::Tree() {
 
 Tree::Tree(Node* nd) {
     root = nd;
-}
-
-void deleteNode(Node* nd) {
-
-    qDebug() << "Delete node. Level " + QString::number(nd->generation);
-    if (nd->children.size() > 0) {
-        for (int i = 0; i < nd->children.size(); ++i)
-            deleteNode(nd->children[i]);
-    }
-
-    delete nd; 
-}
-
-Tree::~Tree() {
-    deleteNode(root);
 }
 
 Node* Tree::getRoot() {

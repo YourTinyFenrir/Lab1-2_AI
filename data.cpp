@@ -9,8 +9,6 @@ void Data::refresh(Node* nd) {
     addedChildren.clear();
     numOfSteps = 0;
 
-    if (tree.getRoot() != nullptr)
-        tree.~Tree();
     Tree tr(nd);
     tree = tr;
     childrenForExpansion.push_back(tree.getRoot());
