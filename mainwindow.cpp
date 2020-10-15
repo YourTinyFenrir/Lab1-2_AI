@@ -28,37 +28,37 @@ void MainWindow::showOnScreen(Node* nd, int num) {
 
     switch(num) {
     case 0:
-        ui->s10->setNum(nd->content.cell[0][0]);
-        ui->s11->setNum(nd->content.cell[0][1]);
-        ui->s12->setNum(nd->content.cell[0][2]);
-        ui->s13->setNum(nd->content.cell[1][0]);
-        ui->s14->setNum(nd->content.cell[1][1]);
-        ui->s15->setNum(nd->content.cell[1][2]);
-        ui->s16->setNum(nd->content.cell[2][0]);
-        ui->s17->setNum(nd->content.cell[2][1]);
-        ui->s18->setNum(nd->content.cell[2][2]);
+        ui->s10->setNum(nd->state.cell[0][0]);
+        ui->s11->setNum(nd->state.cell[0][1]);
+        ui->s12->setNum(nd->state.cell[0][2]);
+        ui->s13->setNum(nd->state.cell[1][0]);
+        ui->s14->setNum(nd->state.cell[1][1]);
+        ui->s15->setNum(nd->state.cell[1][2]);
+        ui->s16->setNum(nd->state.cell[2][0]);
+        ui->s17->setNum(nd->state.cell[2][1]);
+        ui->s18->setNum(nd->state.cell[2][2]);
         break;
     case 1:
-        ui->s20->setNum(nd->content.cell[0][0]);
-        ui->s21->setNum(nd->content.cell[0][1]);
-        ui->s22->setNum(nd->content.cell[0][2]);
-        ui->s23->setNum(nd->content.cell[1][0]);
-        ui->s24->setNum(nd->content.cell[1][1]);
-        ui->s25->setNum(nd->content.cell[1][2]);
-        ui->s26->setNum(nd->content.cell[2][0]);
-        ui->s27->setNum(nd->content.cell[2][1]);
-        ui->s28->setNum(nd->content.cell[2][2]);
+        ui->s20->setNum(nd->state.cell[0][0]);
+        ui->s21->setNum(nd->state.cell[0][1]);
+        ui->s22->setNum(nd->state.cell[0][2]);
+        ui->s23->setNum(nd->state.cell[1][0]);
+        ui->s24->setNum(nd->state.cell[1][1]);
+        ui->s25->setNum(nd->state.cell[1][2]);
+        ui->s26->setNum(nd->state.cell[2][0]);
+        ui->s27->setNum(nd->state.cell[2][1]);
+        ui->s28->setNum(nd->state.cell[2][2]);
         break;
     case 2:
-        ui->s30->setNum(nd->content.cell[0][0]);
-        ui->s31->setNum(nd->content.cell[0][1]);
-        ui->s32->setNum(nd->content.cell[0][2]);
-        ui->s33->setNum(nd->content.cell[1][0]);
-        ui->s34->setNum(nd->content.cell[1][1]);
-        ui->s35->setNum(nd->content.cell[1][2]);
-        ui->s36->setNum(nd->content.cell[2][0]);
-        ui->s37->setNum(nd->content.cell[2][1]);
-        ui->s38->setNum(nd->content.cell[2][2]);
+        ui->s30->setNum(nd->state.cell[0][0]);
+        ui->s31->setNum(nd->state.cell[0][1]);
+        ui->s32->setNum(nd->state.cell[0][2]);
+        ui->s33->setNum(nd->state.cell[1][0]);
+        ui->s34->setNum(nd->state.cell[1][1]);
+        ui->s35->setNum(nd->state.cell[1][2]);
+        ui->s36->setNum(nd->state.cell[2][0]);
+        ui->s37->setNum(nd->state.cell[2][1]);
+        ui->s38->setNum(nd->state.cell[2][2]);
         break;
     }
 
@@ -160,7 +160,7 @@ void MainWindow::on_bStep_clicked() {
 
     outputList1 = data.getChildrenForExpansion();
     outputList2 = data.getNewChildren();
-    outputList3 = data.getRepeatingChildren();\
+    outputList3 = data.getRepeatingChildren();
 
     QVector<int> temp(9);
     Node nd(temp);

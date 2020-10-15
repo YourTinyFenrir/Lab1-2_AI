@@ -4,7 +4,7 @@
 #include "field.h"
 
 struct Node {
-    Field content;
+    Field state;
     QVector<Node*> children;
     int generation;
     Node* parent;

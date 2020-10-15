@@ -36,7 +36,7 @@ void Data::setFS(Field f) {
 }
 
 int Data::getKey(Node* nd) {
-    return nd->content.toInt();
+    return nd->state.toInt();
 }
 
 bool Data::goalTest(Node* nd) {
@@ -45,7 +45,7 @@ bool Data::goalTest(Node* nd) {
 
     for (int i = 0; i < 3 && res; ++i)
         for (int j = 0; j < 3 && res; ++j)
-            if (finalState.cell[i][j] != nd->content.cell[i][j])
+            if (finalState.cell[i][j] != nd->state.cell[i][j])
                 res = false;
 
     return res;
@@ -79,6 +79,7 @@ bool Data::stepSearch(QString option) {
     QVector<Node*> temp;
     QString depthResStr;
     repeatingChildren.clear();
+    infoStr.clear();
 
     newChildren = tree.expansion(childrenForExpansion[0]);
     for (int i = 0; i < newChildren.size(); ++i) {
@@ -96,12 +97,18 @@ bool Data::stepSearch(QString option) {
     childrenForExpansion.removeFirst();
 
     if (option == "BFS") {
+        if (numOfSteps == 0)
+            infoStr += "Слепой поиск в ширину \n";
+
         childrenForExpansion.append(temp);
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
     }
 
     if (option == "DFS") {
+        if (numOfSteps == 0)
+            infoStr += "Слепой поиск в глубину \n";
+
         for (int i = 0; i < temp.size(); ++i) {
             childrenForExpansion.push_front(temp[temp.size()-1-i]); // добавление в начало вектора
             addedChildren.insert(getKey(temp[i]), temp[i]);
@@ -109,13 +116,16 @@ bool Data::stepSearch(QString option) {
     }
 
     if (option == "GS1") {
+        if (numOfSteps == 0)
+            infoStr += "Жадный поиск + Кол-во фишек не на своих местах \n";
+
         childrenForExpansion.append(temp);
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
 
         int min = 100; int min_i = 0; // Поиск состояния с наибольшим числом значений не на "своих" местах
         for (int i = 0; i < childrenForExpansion.size(); ++i) {
-            int numCells = childrenForExpansion[i]->content.cellsOnIncorrectPosition(finalState);
+            int numCells = childrenForExpansion[i]->state.cellsOnIncorrectPosition(finalState);
             if (numCells < min) {
                 min = numCells;
                 min_i = i;
@@ -127,13 +137,16 @@ bool Data::stepSearch(QString option) {
     }
 
     if (option == "GS2") {
+        if (numOfSteps == 0)
+            infoStr += "Жадный поиск + Манхэттенское расстояние \n";
+
         childrenForExpansion.append(temp);
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
 
         int min = 100; int min_i = 0; // Поиск состояния с наименьшим Манхэттенским расстоянием
         for (int i = 0; i < childrenForExpansion.size(); ++i) {
-            int dist = childrenForExpansion[i]->content.manhattanDistance(finalState);
+            int dist = childrenForExpansion[i]->state.manhattanDistance(finalState);
             if (dist < min) {
                 min = dist;
                 min_i = i;
@@ -145,13 +158,16 @@ bool Data::stepSearch(QString option) {
     }
 
     if (option == "A*1") {
+        if (numOfSteps == 0)
+            infoStr += "А* + Кол-во фишек не на своих местах \n";
+
         childrenForExpansion.append(temp);
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
 
         int min = 1000000000; int min_i = 0; // Поиск состояния с наибольшим числом значений не на "своих" местах (также учитываем глубину узла)
         for (int i = 0; i < childrenForExpansion.size(); ++i) {
-            int numCells = childrenForExpansion[i]->content.cellsOnIncorrectPosition(finalState);
+            int numCells = childrenForExpansion[i]->state.cellsOnIncorrectPosition(finalState);
             int depth = childrenForExpansion[i]->generation;
             if (numCells + depth < min) {
                 min = numCells + depth;
@@ -164,13 +180,16 @@ bool Data::stepSearch(QString option) {
     }
 
     if (option == "A*2") {
+        if (numOfSteps == 0)
+            infoStr += "А* + Манхэттенское расстояние \n";
+
         childrenForExpansion.append(temp);
         for (int i = 0; i < temp.size(); ++i)
             addedChildren.insert(getKey(temp[i]), temp[i]);
 
         int min = 1000000000; int min_i = 0; // Поиск состояния с наименьшим Манхэттенским расстоянием (также учитываем глубину узла)
         for (int i = 0; i < childrenForExpansion.size(); ++i) {
-            int numCells = childrenForExpansion[i]->content.manhattanDistance(finalState);
+            int numCells = childrenForExpansion[i]->state.manhattanDistance(finalState);
             int depth = childrenForExpansion[i]->generation;
             if (numCells + depth < min) {
                 min = numCells + depth;
@@ -185,10 +204,10 @@ bool Data::stepSearch(QString option) {
     numOfSteps++;
 
     if (!res)
-        infoStr = "Решение не найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
+        infoStr += "Решение не найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
                 ". Выполнено шагов: " + QString::number(numOfSteps) + "\n";
     else
-        infoStr = "Решение найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
+        infoStr += "Решение найдено. Заполнено узлов: " + QString::number(addedChildren.size()) +
                 ". Выполнено шагов: " + QString::number(numOfSteps) + ". Количество шагов для решения: " + depthResStr + "\n";
 
     return res;
